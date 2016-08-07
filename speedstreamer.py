@@ -1,4 +1,3 @@
-import sys
 from subprocess import call
 
 import requests
@@ -8,13 +7,13 @@ PER_PAGE = 30
 
 
 def print_channels(channels, offset=0, per_page=None):
-    for index, channel in enumerate(channels[offset:offset+per_page or len(channels)]):
+    for index, channel in enumerate(channels[offset:offset + per_page or len(channels)]):
         print("[%s] %s playing %s (%s)" %
-            (offset + index,
-             channel['display_name'],
-             channel['meta_game'],
-             channel['title']
-            ))
+              (offset + index,
+               channel['display_name'],
+               channel['meta_game'],
+               channel['title']))
+
 
 def main():
     r = requests.get('http://api.speedrunslive.com/frontend/streams')
@@ -43,19 +42,12 @@ def main():
             except ValueError:
                 print "Please select a valid number."
 
-    quality = None
-    while not quality:
-        choice = raw_input("Quality? [a]udio [l]ow [m]edium [h]igh or [s]ource?")
-        quality = {
-            'a': 'audio',
-            'l': 'low',
-            'm': 'medium',
-            'h': 'high',
-            's': 'source'
-        }.get(choice)
+    url = {
+        'twitch': 'http://twitch.tv/%s' % channel['name'],
+        'hitbox': 'http://hitbox.tv/%s' % channel['name'],
+    }[channel['api']]
 
-
-    call(["livestreamer", "http://twitch.tv/%s" % channel['name'], quality])
+    call(["livestreamer", url, "best"])
 
 if __name__ == "__main__":
     main()
